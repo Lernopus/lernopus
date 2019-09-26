@@ -4,7 +4,7 @@
 		<item value="250" key="dialogHeight"/>
 		<item value="350" key="dialogWidth"/>
 		<list key="textEntries">
-			<item value="1"/>
+			<item value="2"/>
 		</list>
 		<list key="orderedElements">
 			<item value="org.eclipse.ui.views.ResourceNavigator"/>
@@ -14,6 +14,7 @@
 		</list>
 		<list key="textArray">
 			<item value="navig"/>
+			<item value="navi"/>
 		</list>
 	</section>
 	<section name="ImportExportAction">
