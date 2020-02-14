@@ -1,7 +1,7 @@
 export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:1010/api';
 export const ACCESS_TOKEN = 'accessToken';
 
-export const COURSE_LIST_SIZE = 30;
+export const COURSE_LIST_SIZE = 5;
 export const MAX_CHOICES = 6;
 export const COURSE_QUESTION_MAX_LENGTH = 250;
 export const COURSE_CHOICE_MAX_LENGTH = 40;

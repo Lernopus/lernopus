@@ -52,7 +52,7 @@ public class LaCourseController {
     public PagedResponse<LaCourseResponse> getCourses(@CurrentUser LaUserPrincipal currentUser,
                                                 @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
                                                 @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size) {
-        return courseService.getAllCourses(currentUser, page, size);
+        return courseService.getAllRootCourses(currentUser, page, size);
     }
 
     @PostMapping
@@ -79,15 +79,23 @@ public class LaCourseController {
 
     @GetMapping("/{courseId}")
     public LaCourseResponse getCourseById(@CurrentUser LaUserPrincipal currentUser,
-                                    @PathVariable Long courseId) {
-        return courseService.getCourseById(courseId, currentUser);
+                                    @PathVariable Long courseId,@RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
+                                    @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size) {
+    	LaCourseResponse courseById = courseService.getCourseById(courseId, currentUser);
+    	PagedResponse<LaCourseResponse> childCoursePageResponse = courseService.getAllChildCourses(Long.valueOf(courseId), currentUser,page,size);
+    	courseById.setChildCoursePageResponse(childCoursePageResponse);
+        return courseById;
     }
 
     @GetMapping("/learnCourseId/{learnCourseId}")
     @PreAuthorize("hasRole('USER')")
     public LaCourseResponse getLaCourseDetails(@PathVariable(value = "learnCourseId") String laCourseId,
-                                                         @CurrentUser LaUserPrincipal currentUser) {
-        return courseService.getCourseById(Long.valueOf(laCourseId), currentUser);
+                                                         @CurrentUser LaUserPrincipal currentUser,@RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
+                                                         @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size) {
+    	LaCourseResponse courseById = courseService.getCourseById(Long.valueOf(laCourseId), currentUser);
+    	PagedResponse<LaCourseResponse> childCoursePageResponse = courseService.getAllChildCourses(Long.valueOf(laCourseId), currentUser,page,size);
+    	courseById.setChildCoursePageResponse(childCoursePageResponse);
+        return courseById;
     }
     
     @PostMapping("/uploadFile")

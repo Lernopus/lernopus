@@ -2,13 +2,16 @@ import React, { Component } from 'react';
 import LoadingIndicator  from '../common/LoadingIndicator';
 import Chips, { Chip } from 'react-chips'
 import './CourseDetail.css';
+import Course from './Course';
 import NotFound from '../common/NotFound';
 import ServerError from '../common/ServerError';
 import { getCourseDetails } from '../util/APIUtils';
+import { Button, Icon } from 'antd';
 import { Avatar, Tabs } from 'antd';
 import { Link } from 'react-router-dom';
 import { getAvatarColor } from '../util/Colors';
 import { formatDateTime } from '../util/Helpers';
+import { COURSE_LIST_SIZE } from '../constants';
 import theme from './ReactChipTheme';
 
 class CourseDetail extends Component {
@@ -21,17 +24,35 @@ class CourseDetail extends Component {
         this.loadCourseDetails = this.loadCourseDetails.bind(this);
     }
 
-    loadCourseDetails(learnCourseId) {
+    loadCourseDetails(learnCourseId,page = 0, size = COURSE_LIST_SIZE) {
         this.setState({
             isLoading: true
         });
 
-        getCourseDetails(learnCourseId)
+        getCourseDetails(learnCourseId,page, size)
         .then(response => {
-            this.setState({
-                course: response,
-                isLoading: false
-            });
+            
+            if(response.childCoursePageResponse!== null && response.childCoursePageResponse.courses!== null)
+            {
+                const courses = [];
+                this.setState({
+                    course: response,
+                    courses: courses.concat(response.childCoursePageResponse.content),
+                    page: response.childCoursePageResponse.page,
+                    size: response.childCoursePageResponse.size,
+                    totalElements: response.childCoursePageResponse.totalElements,
+                    totalPages: response.childCoursePageResponse.totalPages,
+                    last: response.childCoursePageResponse.last,
+                    isLoading: false
+                });
+            }
+            else
+            {
+                this.setState({
+                    course: response,
+                    isLoading: false
+                });
+            }
         }).catch(error => {
             if(error.status === 404) {
                 this.setState({
@@ -52,7 +73,41 @@ class CourseDetail extends Component {
         this.loadCourseDetails(learnCourseId);
     }
 
+    componentDidUpdate(nextProps) {
+        if(this.props.isAuthenticated !== nextProps.isAuthenticated) {
+            // Reset State
+            this.setState({
+                courses: [],
+                page: 0,
+                size: 10,
+                totalElements: 0,
+                totalPages: 0,
+                last: true,
+                // currentVotes: [],
+                isLoading: false
+            });    
+            const learnCourseId = this.props.match.params.learnCourseId;
+            this.loadCourseDetails(learnCourseId);
+        }
+    }
+
+    handleLoadMore() {
+        const learnCourseId = this.props.match.params.learnCourseId;
+        this.loadCourseDetails(learnCourseId,this.state.page + 1);
+    }
+
     render() {
+        const courseViews = [];
+        if(this.state.courses !== null && this.state.courses !== undefined)
+        {
+            this.state.courses.forEach((course, courseIndex) => {
+                courseViews.push(<Course 
+                    key={course.learnCourseId} 
+                    course={course}
+                    />)            
+            });
+        }
+
         if(this.state.isLoading) {
             return <LoadingIndicator />;
         }
@@ -66,6 +121,7 @@ class CourseDetail extends Component {
         }
 
         return (
+            
             <div className="new-course-container">
                     <div className="course-creator-info">
                         <Link className="creator-link" to={`/learnCourseId/${this.state.course.createdBy.laUserName}`}>
@@ -95,6 +151,28 @@ class CourseDetail extends Component {
                             />
                         </div>
                     </div>
+                    {
+                    courseViews.length>0 ?(
+                            <div>
+                            <div>
+                            <span className="course-creator-name">
+                                Sub Courses:
+                            </span>
+                            <div>
+                            </div>
+                            </div>
+                                {courseViews}  
+                                {
+                                    !this.state.isLoading && !this.state.last ? (
+                                        <div className="load-more-courses"> 
+                                            <Button type="dashed" onClick={this.handleLoadMore} disabled={this.state.isLoading}>
+                                            <Icon type="plus" /> Load more
+                                        </Button>
+                                    </div>): null
+                                }
+                            </div>
+                    ) : null
+                    }
                     <div>
                     <span dangerouslySetInnerHTML={{__html: this.state.course.laCourseContentHtml}} />
                     </div>

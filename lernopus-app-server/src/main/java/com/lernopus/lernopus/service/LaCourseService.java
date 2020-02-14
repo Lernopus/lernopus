@@ -75,6 +75,30 @@ public class LaCourseService {
         return new PagedResponse<>(courseResponses, courses.getNumber(),
                 courses.getSize(), courses.getTotalElements(), courses.getTotalPages(), courses.isLast());
     }
+    
+    public PagedResponse<LaCourseResponse> getAllRootCourses(LaUserPrincipal currentUser, int page, int size) {
+        validatePageNumberAndSize(page, size);
+
+        // Retrieve Courses
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "laCreatedAt");
+        Page<LaLearnCourse> courses = laCourseRepository.getAllRootCourse(pageable);
+
+        if(courses.getNumberOfElements() == 0) {
+            return new PagedResponse<>(Collections.emptyList(), courses.getNumber(),
+                    courses.getSize(), courses.getTotalElements(), courses.getTotalPages(), courses.isLast());
+        }
+
+        Map<Long, LaLearnUser> creatorMap = getCourseCreatorMap(courses.getContent());
+
+        List<LaCourseResponse> courseResponses = courses.map(course -> {
+            return ModelMapper.mapCourseToCourseResponse(course,
+                    creatorMap.get(course.getLaCreatedUser()));
+        }).getContent();
+
+        return new PagedResponse<>(courseResponses, courses.getNumber(),
+                courses.getSize(), courses.getTotalElements(), courses.getTotalPages(), courses.isLast());
+    }
+
 
     public PagedResponse<LaCourseResponse> getCoursesCreatedBy(String username, LaUserPrincipal currentUser, int page, int size) {
         validatePageNumberAndSize(page, size);
@@ -243,5 +267,28 @@ public class LaCourseService {
          
         //return complete hash
        return sb.toString();
+    }
+
+    public PagedResponse<LaCourseResponse> getAllChildCourses(Long courseId, LaUserPrincipal currentUser, int page, int size) {
+        validatePageNumberAndSize(page, size);
+
+        // Retrieve Courses
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "laCreatedAt");
+        Page<LaLearnCourse> courses = laCourseRepository.getAllChildCourse(courseId, pageable);
+
+        if(courses.getNumberOfElements() == 0) {
+            return new PagedResponse<>(Collections.emptyList(), courses.getNumber(),
+                    courses.getSize(), courses.getTotalElements(), courses.getTotalPages(), courses.isLast());
+        }
+
+        Map<Long, LaLearnUser> creatorMap = getCourseCreatorMap(courses.getContent());
+
+        List<LaCourseResponse> courseResponses = courses.map(course -> {
+            return ModelMapper.mapCourseToCourseResponse(course,
+                    creatorMap.get(course.getLaCreatedUser()));
+        }).getContent();
+
+        return new PagedResponse<>(courseResponses, courses.getNumber(),
+                courses.getSize(), courses.getTotalElements(), courses.getTotalPages(), courses.isLast());
     }
 }

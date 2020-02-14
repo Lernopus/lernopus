@@ -96,9 +96,11 @@ export function getUserProfile(username) {
     });
 }
 
-export function getCourseDetails(learnCourseId) {
+export function getCourseDetails(learnCourseId,page, size) {
+    page = page || 0;
+    size = size || COURSE_LIST_SIZE;
     return request({
-        url: API_BASE_URL + "/courses/learnCourseId/" + learnCourseId,
+        url: API_BASE_URL + "/courses/learnCourseId/" + learnCourseId + "?page=" + page + "&size=" + size,
         method: 'GET'
     });
 }

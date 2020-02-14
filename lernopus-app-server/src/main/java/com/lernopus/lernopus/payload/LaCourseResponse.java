@@ -18,6 +18,7 @@ public class LaCourseResponse {
     private Boolean laIsNote;
     private Long laCourseParentId;
     private Long laCourseRootId;
+    private PagedResponse<LaCourseResponse> childCoursePageResponse;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long selectedChoice;
@@ -134,6 +135,13 @@ public class LaCourseResponse {
     public void setCourseRootId(Long laCourseRootId) {
         this.laCourseRootId = laCourseRootId;
     }
+    
+    public PagedResponse<LaCourseResponse> getChildCoursePageResponse() {
+        return childCoursePageResponse;
+    }
 
+    public void setChildCoursePageResponse(PagedResponse<LaCourseResponse> childCoursePageResponse) {
+        this.childCoursePageResponse = childCoursePageResponse;
+    }
 
 }
