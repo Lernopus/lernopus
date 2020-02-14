@@ -38,7 +38,7 @@ public class UserController {
     @GetMapping("/user/me")
     @PreAuthorize("hasRole('USER')")
     public LaUserSummary getCurrentUser(@CurrentUser LaUserPrincipal currentUser) {
-        LaUserSummary userSummary = new LaUserSummary(currentUser.getLaUserId(), currentUser.getUsername(), currentUser.getLaUserFullName());
+        LaUserSummary userSummary = new LaUserSummary(currentUser.getLaUserId(), currentUser.getUsername(), currentUser.getLaUserFullName(), currentUser.getLaImagePath());
         return userSummary;
     }
 
@@ -69,7 +69,7 @@ public class UserController {
         long courseCount = laCourseRepository.countByLaCreatedUser(user.getLaUserId());
         long voteCount = 0;
 
-        UserProfile userProfile = new UserProfile(user.getLaUserId(), user.getLaUserName(), user.getLaUserFullName(), user.getLaCreatedAt(), courseCount, voteCount);
+        UserProfile userProfile = new UserProfile(user.getLaUserId(), user.getLaUserName(), user.getLaUserFullName(), user.getLaCreatedAt(), courseCount, voteCount, user.getLaImagePath());
 
         return userProfile;
     }

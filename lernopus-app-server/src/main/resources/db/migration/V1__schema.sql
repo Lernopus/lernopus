@@ -6,7 +6,7 @@ CREATE TABLE `la_learn_user` (
   `la_user_full_name` varchar(90) NOT NULL,
   `la_mail_id` varchar(100) NOT NULL,
   `la_phone_number` bigint(10) NOT NULL,
-  `la_image_path` varchar(100) NOT NULL,
+  `la_image_path` longtext NOT NULL,
   `la_password` varchar(250) NOT NULL,
   `la_created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
   `la_updated_at` timestamp DEFAULT CURRENT_TIMESTAMP,
@@ -59,6 +59,8 @@ CREATE TABLE `la_learn_course` (
   `la_course_content_html` longtext NOT NULL,
   `la_author_id` bigint(20) NOT NULL,
   `la_is_note` binary default false,
+  `la_course_parent_id` bigint(20) NOT NULL,
+  `la_course_root_id` bigint(20) NOT NULL,
   `la_created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
   `la_updated_at` timestamp DEFAULT CURRENT_TIMESTAMP,
   `la_created_user` bigint(20) DEFAULT NULL,
@@ -66,21 +68,19 @@ CREATE TABLE `la_learn_course` (
   PRIMARY KEY (`la_course_id`),
   CONSTRAINT `fk_la_learn_course_author_id` FOREIGN KEY (`la_author_id`) REFERENCES `la_learn_user` (`la_user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------ ATTACHMENT TABLE FOR LERNOPUS --------------------------------------------------------------------------------------
 
 CREATE TABLE `la_learn_attachments` (
   `la_attach_id` bigint(20) NOT NULL AUTO_INCREMENT,
   `la_course_id` bigint(20) NOT NULL,
-  `la_attach_path` varchar NOT NULL,
   `la_attach_name` varchar NOT NULL,
-  `la_attach_type` varchar NOT NULL,
-  `la_attach_size` bigint NOT NULL,
   `la_attach_extension` varchar NOT NULL,
   `la_attach_file_id` varchar NOT NULL,
   `la_attach_preview` blob NOT NULL,
   `la_attach_size_readable` varchar NOT NULL,
-  `la_attach_blob` blob NOT NULL,
+  `la_attach_file_ref_id` varchar NOT NULL,
   `la_created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
   `la_updated_at` timestamp DEFAULT CURRENT_TIMESTAMP,
   `la_created_user` bigint(20) DEFAULT NULL,

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { createCourse } from '../util/APIUtils';
+import { createCourse, uploadAttachFiles } from '../util/APIUtils';
 import { COURSE_QUESTION_MAX_LENGTH, TECH_TAG} from '../constants';
 import './NewCourse.css';  
 import { Form, Input, Button, notification } from 'antd';
@@ -31,7 +31,8 @@ class NewCourse extends Component {
             laCourseContentText: '',
             laTechTag: [],
             laIsNote : false,
-            laAuthorId : 'amernavi'
+            laAuthorId : 'amernavi',
+            laFileIdReference : []
         };
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleLaCourseNameChange = this.handleLaCourseNameChange.bind(this);
@@ -43,6 +44,7 @@ class NewCourse extends Component {
         this.onFilesError = this.onFilesError.bind(this);
         this.isFormInvalid = this.isFormInvalid.bind(this);
         this.laCourseOrNoteChange = this.laCourseOrNoteChange.bind(this);
+        this.uploadMultipleFiles = this.uploadMultipleFiles.bind(this);
     }
 
     handleSubmit(event) {
@@ -56,12 +58,9 @@ class NewCourse extends Component {
           attachForCourse['laAttachExtension'] = file['extension'];
           attachForCourse['laAttachFileId'] = file['id'];
           attachForCourse['laAttachName'] = file['name'];
-          attachForCourse['laAttachPath'] = file['name'];
           attachForCourse['laAttachPreview'] = file['preview'];
-          attachForCourse['laAttachSize'] = file['size'];
           attachForCourse['laAttachSizeReadable'] = file['sizeReadable'];
-          attachForCourse['laAttachType'] = file['type'];
-          attachForCourse['laAttachBlob'] = new Blob([file], { type: file.type });
+          attachForCourse['laAttachFileRefId'] = this.state.laFileIdReference[key]['laFileDownloadUri'];
           learnAttach.push(attachForCourse);
         })
         const courseData = {
@@ -162,12 +161,33 @@ class NewCourse extends Component {
     }
 
     onFilesChange = (files) => {
+        this.uploadMultipleFiles(files);    
+    }
+
+    uploadMultipleFiles = (files) => {
+        var formData = new FormData();
+    for(var index = 0; index < files.length; index++) {
+        formData.append("files", files[index]);
+    }
+    uploadAttachFiles(formData).then(response => {
+        this.setState({ laFileIdReference : response })
         this.setState({
-          files
-        }, () => {
-          console.log(this.state.files)
-        })
-      }
+            files
+          }, () => {
+            console.log(this.state.files)
+          });
+    }).catch(error => {
+        if(error.status === 401) {
+            this.props.handleLogout('/login', 'error', 'You have been logged out. Please login create course.');    
+        } else {
+            notification.error({
+                message: 'Learn Opus',
+                description: error.message || 'Sorry! Something went wrong. Please try again!'
+            });              
+        }
+    });
+
+    }
     
       onFilesError = (error, file) => {
         console.log('error code ' + error.code + ': ' + error.message)
@@ -242,7 +262,6 @@ class NewCourse extends Component {
                         >
                           Drop files here or click to upload
                         </Files>
-                        <button onClick={this.filesRemoveAll}>Remove Attachments</button>
                         {
                           this.state.files.length > 0
                           ? <div className='files-list'>

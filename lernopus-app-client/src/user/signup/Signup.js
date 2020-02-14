@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { signup, checkUsernameAvailability, checkEmailAvailability, checkPhoneNumberAvailability } from '../../util/APIUtils';
 import './Signup.css';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
+import { GOOGLE_AUTH_URL, FACEBOOK_AUTH_URL, GITHUB_AUTH_URL } from '../../constants';
 import { 
     NAME_MIN_LENGTH, NAME_MAX_LENGTH, 
     USERNAME_MIN_LENGTH, USERNAME_MAX_LENGTH,
@@ -9,6 +10,9 @@ import {
     PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH,
     PHONE_NUMBER_MIN_LENGTH, PHONE_NUMBER_MAX_LENGTH
 } from '../../constants';
+import fbLogo from '../../img/fb-logo.png';
+import googleLogo from '../../img/google-logo.png';
+import githubLogo from '../../img/github-logo.png';
 
 import { Form, Input, Button, notification } from 'antd';
 const FormItem = Form.Item;
@@ -93,10 +97,19 @@ class Signup extends Component {
     }
 
     render() {
+        
+        if(this.props.authenticated) {
+            return <Redirect
+                to={{
+                pathname: "/",
+                state: { from: this.props.location }
+            }}/>;            
+        }
         return (
             <div className="signup-container">
                 <h1 className="page-title">Sign Up</h1>
                 <div className="signup-content">
+                    <SocialSignup />
                     <Form onSubmit={this.handleSubmit} className="signup-form">
                         <FormItem 
                             label="Full Name"
@@ -459,6 +472,19 @@ class Signup extends Component {
         }
     }
 
+}
+
+class SocialSignup extends Component {
+    render() {
+        return (
+            <div className="social-signup">
+                <a className="btn btn-block social-btn google" href={GOOGLE_AUTH_URL}>
+                    <img src={googleLogo} alt="Google" /> Sign up with Google</a>
+                <a className="btn btn-block social-btn facebook" href={FACEBOOK_AUTH_URL}>
+                    <img src={fbLogo} alt="Facebook" /> Sign up with Facebook</a>
+            </div>
+        );
+    }
 }
 
 export default Signup;

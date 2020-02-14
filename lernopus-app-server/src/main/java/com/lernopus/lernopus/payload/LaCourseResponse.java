@@ -16,6 +16,8 @@ public class LaCourseResponse {
     private LaUserSummary createdBy;
     private Instant laCreatedAt;
     private Boolean laIsNote;
+    private Long laCourseParentId;
+    private Long laCourseRootId;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long selectedChoice;
@@ -115,6 +117,22 @@ public class LaCourseResponse {
 
     public void setLaIsNote(Boolean laIsNote) {
         this.laIsNote = laIsNote;
+    }
+    
+    public Long getCourseParentId() {
+        return laCourseParentId;
+    }
+
+    public void setCourseParentId(Long laCourseParentId) {
+        this.laCourseParentId = laCourseParentId;
+    }
+    
+    public Long getCourseRootId() {
+        return laCourseRootId;
+    }
+
+    public void setCourseRootId(Long laCourseRootId) {
+        this.laCourseRootId = laCourseRootId;
     }
 
 

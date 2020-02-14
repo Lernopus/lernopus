@@ -112,3 +112,33 @@ export function getUserCreatedCourses(username, page, size) {
         method: 'GET'
     });
 }
+
+export function uploadAttachFiles(laAttachFiles) {
+    return requestForMultiPart({
+        url: API_BASE_URL + "/courses/uploadMultipleFiles",
+        method: 'POST',
+        body: laAttachFiles         
+    });
+}
+
+const requestForMultiPart = (options) => {
+    const headers = new Headers({
+    })
+    
+    if(localStorage.getItem(ACCESS_TOKEN)) {
+        headers.append('Authorization', 'Bearer ' + localStorage.getItem(ACCESS_TOKEN))
+    }
+
+    const defaults = {headers: headers};
+    options = Object.assign({}, defaults, options);
+
+    return fetch(options.url, options)
+    .then(response => 
+        response.json().then(json => {
+            if(!response.ok) {
+                return Promise.reject(json);
+            }
+            return json;
+        })
+    );
+};

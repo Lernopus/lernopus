@@ -5,6 +5,7 @@ import org.hibernate.annotations.NaturalId;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
@@ -61,11 +62,21 @@ public class LaLearnUser extends LaDateAudit {
     @Column(name = "la_password")
     private String laPassword;
     
+    @Lob
     @Column(name = "la_image_path")
     private String laImagePath;
+    
+    @Column(nullable = false)
+    private Boolean emailVerified = false;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {
-            CascadeType.PERSIST,
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private AuthProvider provider;
+
+    private String providerId;
+
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {
             CascadeType.MERGE
         })
     @JoinTable(name = "la_learn_user_roles",
@@ -75,7 +86,6 @@ public class LaLearnUser extends LaDateAudit {
     
     @ManyToMany(fetch = FetchType.LAZY,
             cascade = {
-                CascadeType.PERSIST,
                 CascadeType.MERGE
             })
     @JoinTable(name = "la_learn_author_subscription",
@@ -85,7 +95,6 @@ public class LaLearnUser extends LaDateAudit {
     
     @ManyToMany(fetch = FetchType.LAZY,
             cascade = {
-                CascadeType.PERSIST,
                 CascadeType.MERGE
             })
     @JoinTable(name = "la_learn_course_subscription",
@@ -185,6 +194,30 @@ public class LaLearnUser extends LaDateAudit {
 
     public void setLaCourse(Set<LaLearnCourse> laCourse) {
         this.laCourse = laCourse;
+    }
+    
+    public Boolean getEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(Boolean emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+    
+    public AuthProvider getProvider() {
+        return provider;
+    }
+
+    public void setProvider(AuthProvider provider) {
+        this.provider = provider;
+    }
+
+    public String getProviderId() {
+        return providerId;
+    }
+
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
     }
 
 }

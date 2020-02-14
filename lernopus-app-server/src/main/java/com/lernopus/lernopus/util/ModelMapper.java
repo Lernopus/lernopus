@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import com.lernopus.lernopus.model.LaLearnAttachments;
@@ -34,15 +35,17 @@ public class ModelMapper {
         laLearnAttachmentsList.stream().forEach(learnAttach->{
         	Map<String,Object> attachParam = new HashMap<>();
         	attachParam.put("laAttachPreview", learnAttach.getLaAttachPreview());
-        	attachParam.put("laAttachmentType", learnAttach.getLaAttachmentType());
         	attachParam.put("laAttachName", learnAttach.getLaAttachName());
-        	attachParam.put("laAttachmentSize", learnAttach.getLaAttachmentSize());
         	attachParam.put("laAttachExtension", learnAttach.getLaAttachExtension());
+        	attachParam.put("laAttachFileRefId", learnAttach.getLaAttachFileRefId());
         	attachParamList.add(attachParam);
         });
         courseResponse.setLaLearnAttachments(attachParamList);
-        LaUserSummary creatorSummary = new LaUserSummary(creator.getLaUserId(), creator.getLaUserName(), creator.getLaUserFullName());
-        courseResponse.setCreatedBy(creatorSummary);
+        if(Objects.nonNull(creator))
+        {
+        	LaUserSummary creatorSummary = new LaUserSummary(creator.getLaUserId(), creator.getLaUserName(), creator.getLaUserFullName(),creator.getLaImagePath());
+        	courseResponse.setCreatedBy(creatorSummary);
+        }
         return courseResponse;
     }
 

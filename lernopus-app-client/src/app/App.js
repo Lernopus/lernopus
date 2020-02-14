@@ -8,6 +8,7 @@ import {
 
 import { getCurrentUser } from '../util/APIUtils';
 import { ACCESS_TOKEN } from '../constants';
+import OAuth2RedirectHandler from '../user/oauth2/OAuth2RedirectHandler';
 
 import CourseList from '../course/CourseList';
 import NewCourse from '../course/NewCourse';
@@ -21,6 +22,9 @@ import LoadingIndicator from '../common/LoadingIndicator';
 import PrivateRoute from '../common/PrivateRoute';
 
 import { Layout, notification } from 'antd';
+import Alert from 'react-s-alert';
+import 'react-s-alert/dist/s-alert-default.css';
+import 'react-s-alert/dist/s-alert-css-effects/slide.css';
 const { Content } = Layout;
 
 class App extends Component {
@@ -116,9 +120,13 @@ class App extends Component {
                   render={(props) => <CourseDetail isAuthenticated={this.state.isAuthenticated} currentUser={this.state.currentUser} {...props}  />}>
                 </Route>
                 <PrivateRoute authenticated={this.state.isAuthenticated} path="/course/new" component={NewCourse} handleLogout={this.handleLogout}></PrivateRoute>
+                <Route path="/oauth2/redirect" component={OAuth2RedirectHandler}></Route>
                 <Route component={NotFound}></Route>
               </Switch>
             </div>
+            <Alert stack={{limit: 3}} 
+          timeout = {3000}
+          position='top-right' effect='slide' offset={65} />
           </Content>
         </Layout>
     );

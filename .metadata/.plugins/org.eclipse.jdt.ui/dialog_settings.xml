@@ -10,8 +10,8 @@
 		<item value="true" key="updateTextualMatches"/>
 	</section>
 	<section name="RefactoringWizard.preview">
-		<item value="680" key="width"/>
-		<item value="460" key="height"/>
+		<item value="630" key="width"/>
+		<item value="400" key="height"/>
 	</section>
 	<section name="RenameInformationPopup">
 	</section>
@@ -21,10 +21,22 @@
 		<item value="2" key="pageIndex"/>
 	</section>
 	<section name="JavaSearchPage">
-		<item value="3" key="HISTORY_SIZE"/>
+		<item value="4" key="HISTORY_SIZE"/>
 		<item value="false" key="CASE_SENSITIVE"/>
 		<item value="11" key="INCLUDE_MASK"/>
 		<section name="HISTORY2">
+			<item value="false" key="isCaseSensitive"/>
+			<item value="" key="javaElement"/>
+			<item value="0" key="scope"/>
+			<item value="11" key="includeMask"/>
+			<item value="example.poll" key="pattern"/>
+			<item value="2" key="limitTo"/>
+			<item value="0" key="matchLocations"/>
+			<item value="0" key="searchFor"/>
+			<list key="workingSets">
+			</list>
+		</section>
+		<section name="HISTORY3">
 			<item value="false" key="isCaseSensitive"/>
 			<item value="" key="javaElement"/>
 			<item value="0" key="scope"/>
@@ -41,7 +53,7 @@
 			<item value="" key="javaElement"/>
 			<item value="0" key="scope"/>
 			<item value="11" key="includeMask"/>
-			<item value="poll" key="pattern"/>
+			<item value="Full Authentication is re" key="pattern"/>
 			<item value="2" key="limitTo"/>
 			<item value="0" key="matchLocations"/>
 			<item value="0" key="searchFor"/>
@@ -53,7 +65,7 @@
 			<item value="" key="javaElement"/>
 			<item value="0" key="scope"/>
 			<item value="11" key="includeMask"/>
-			<item value="example.poll" key="pattern"/>
+			<item value="poll" key="pattern"/>
 			<item value="2" key="limitTo"/>
 			<item value="0" key="matchLocations"/>
 			<item value="0" key="searchFor"/>

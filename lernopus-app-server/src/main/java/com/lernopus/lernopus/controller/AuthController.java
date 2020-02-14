@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.lernopus.lernopus.exception.AppException;
+import com.lernopus.lernopus.model.AuthProvider;
 import com.lernopus.lernopus.model.LaLearnRole;
 import com.lernopus.lernopus.model.LaLearnUser;
 import com.lernopus.lernopus.model.LaRoleName;
@@ -29,7 +30,7 @@ import com.lernopus.lernopus.payload.LoginRequest;
 import com.lernopus.lernopus.payload.SignUpRequest;
 import com.lernopus.lernopus.repository.LaRoleRepository;
 import com.lernopus.lernopus.repository.LaUserRepository;
-import com.lernopus.lernopus.security.JwtTokenProvider;
+import com.lernopus.lernopus.security.TokenProvider;
 
 /**
  * Created by amernath v on 2019-09-04.
@@ -51,7 +52,7 @@ public class AuthController {
     PasswordEncoder passwordEncoder;
 
     @Autowired
-    JwtTokenProvider tokenProvider;
+    TokenProvider tokenProvider;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -65,7 +66,7 @@ public class AuthController {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String jwt = tokenProvider.generateToken(authentication);
+        String jwt = tokenProvider.createToken(authentication);
         return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
     }
 
@@ -90,6 +91,7 @@ public class AuthController {
         LaLearnUser user = new LaLearnUser(signUpRequest.getLaUserName(), signUpRequest.getLaUserFullName(), signUpRequest.getLaMailId(), signUpRequest.getLaPhoneNumber(), signUpRequest.getLaImagePath(), signUpRequest.getLaPassword());
 
         user.setLaPassword(passwordEncoder.encode(user.getLaPassword()));
+        user.setProvider(AuthProvider.local);
 
         LaLearnRole userRole = roleRepository.findByLaRoleName(LaRoleName.ROLE_USER)
                 .orElseThrow(() -> new AppException("User Role not set."));

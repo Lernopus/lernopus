@@ -1,10 +1,18 @@
 package com.lernopus.lernopus.controller;
 
 import java.net.URI;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,12 +22,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.lernopus.lernopus.model.LaCourseAttachFile;
 import com.lernopus.lernopus.model.LaLearnCourse;
 import com.lernopus.lernopus.payload.LaApiResponse;
 import com.lernopus.lernopus.payload.LaCourseRequest;
 import com.lernopus.lernopus.payload.LaCourseResponse;
+import com.lernopus.lernopus.payload.LaCourseUploadFileResponse;
 import com.lernopus.lernopus.payload.PagedResponse;
 import com.lernopus.lernopus.security.CurrentUser;
 import com.lernopus.lernopus.security.LaUserPrincipal;
@@ -52,7 +63,15 @@ public class LaCourseController {
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest().path("/{courseId}")
                 .buildAndExpand(course.getLaCourseId()).toUri();
-
+        if(Objects.nonNull(courseRequest.getLaCourseParentId()))
+        {
+        	LaCourseResponse laCourseResponse = courseService.getCourseById(courseRequest.getLaCourseParentId());
+        	courseService.updateParentAndRootId(course, courseRequest.getLaCourseParentId() , laCourseResponse.getCourseRootId());
+        }
+        else
+        {
+        	courseService.updateParentAndRootId(course, course.getLaCourseId() , course.getLaCourseId());
+        }
         return ResponseEntity.created(location)
                 .body(new LaApiResponse(true, "Course Created Successfully"));
     }
@@ -70,5 +89,34 @@ public class LaCourseController {
                                                          @CurrentUser LaUserPrincipal currentUser) {
         return courseService.getCourseById(Long.valueOf(laCourseId), currentUser);
     }
+    
+    @PostMapping("/uploadFile")
+    public LaCourseUploadFileResponse uploadFile(@RequestParam("file") MultipartFile file) {
+        LaCourseAttachFile dbFile = courseService.storeFile(file);
+
+        String fileDownloadUri = dbFile.getLaCourseAttachId();
+
+        return new LaCourseUploadFileResponse(fileDownloadUri);
+    }
+
+    @PostMapping("/uploadMultipleFiles")
+    public List<LaCourseUploadFileResponse> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files) {
+        return Arrays.asList(files)
+                .stream()
+                .map(file -> uploadFile(file))
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/downloadFile/{fileId}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable String fileId) {
+        // Load file from database
+    	LaCourseAttachFile dbFile = courseService.getFile(fileId);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(dbFile.getLaAttachType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + dbFile.getLaAttachName() + "\"")
+                .body(new ByteArrayResource(dbFile.getLaCourseAttachData()));
+    }
+
 
 }

@@ -9,14 +9,16 @@ public class UserProfile {
     private Instant joinedAt;
     private Long courseCount;
     private Long voteCount;
+    private String laImagePath;
 
-    public UserProfile(Long id, String username, String name, Instant joinedAt, Long courseCount, Long voteCount) {
+    public UserProfile(Long id, String username, String name, Instant joinedAt, Long courseCount, Long voteCount, String laImagePath) {
         this.id = id;
         this.username = username;
         this.name = name;
         this.joinedAt = joinedAt;
         this.courseCount = courseCount;
         this.voteCount = voteCount;
+        this.laImagePath = laImagePath;
     }
 
     public Long getId() {
@@ -66,4 +68,13 @@ public class UserProfile {
     public void setVoteCount(Long voteCount) {
         this.voteCount = voteCount;
     }
+    
+    public String getlaImagePath() {
+        return laImagePath;
+    }
+
+    public void setlaImagePath(String laImagePath) {
+        this.laImagePath = laImagePath;
+    }
+
 }

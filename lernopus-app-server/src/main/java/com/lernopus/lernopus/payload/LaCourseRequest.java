@@ -41,6 +41,12 @@ public class LaCourseRequest {
     @NotNull
     private Set<LaLearnTechnology> laTechTag;
     
+    @Valid
+    private Long laCourseParentId;
+    
+    @Valid
+    private Long laCourseRootId;
+    
 
     public String getLaCourseName() {
         return laCourseName;
@@ -97,7 +103,21 @@ public class LaCourseRequest {
     public void setLaCourseContentText(String laCourseContentText) {
         this.laCourseContentText = laCourseContentText;
     }
+    
+    public Long getLaCourseParentId() {
+        return laCourseParentId;
+    }
 
+    public void setLaCourseParentId(Long laCourseParentId) {
+        this.laCourseParentId = laCourseParentId;
+    }
+    
+    public Long getLaCourseRootId() {
+        return laCourseRootId;
+    }
 
+    public void setLaCourseRootId(Long laCourseRootId) {
+        this.laCourseRootId = laCourseRootId;
+    }
 
 }

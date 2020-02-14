@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {
     Link,
-    withRouter
+    withRouter, NavLink 
 } from 'react-router-dom';
 import './AppHeader.css';
 import courseIcon from '../course.svg';

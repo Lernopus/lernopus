@@ -1,17 +1,20 @@
 package com.lernopus.lernopus.security;
 
-import com.lernopus.lernopus.model.LaLearnUser;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.lernopus.lernopus.model.LaLearnUser;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
-public class LaUserPrincipal implements UserDetails {
+public class LaUserPrincipal implements OAuth2User, UserDetails {
     /**
 	 * 
 	 */
@@ -34,6 +37,8 @@ public class LaUserPrincipal implements UserDetails {
     
     @JsonIgnore
     private String laImagePath;
+    
+    private Map<String, Object> attributes;
 
     private Collection<? extends GrantedAuthority> authorities;
 
@@ -63,6 +68,12 @@ public class LaUserPrincipal implements UserDetails {
                 user.getLaImagePath(),
                 authorities
         );
+    }
+    
+    public static LaUserPrincipal create(LaLearnUser user, Map<String, Object> attributes) {
+    	LaUserPrincipal userPrincipal = LaUserPrincipal.create(user);
+        userPrincipal.setAttributes(attributes);
+        return userPrincipal;
     }
 
     public Long getLaUserId() {
@@ -97,7 +108,6 @@ public class LaUserPrincipal implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-    	System.out.println("Authority Fetched : --------------------------------------- :" + authorities);
         return authorities;
     }
 
@@ -128,10 +138,24 @@ public class LaUserPrincipal implements UserDetails {
         LaUserPrincipal that = (LaUserPrincipal) o;
         return Objects.equals(laUserId, that.laUserId);
     }
+    
+    @Override
+    public Map<String, Object> getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(Map<String, Object> attributes) {
+        this.attributes = attributes;
+    }
 
     @Override
     public int hashCode() {
 
         return Objects.hash(laUserId);
     }
+
+	@Override
+	public String getName() {
+		return String.valueOf(laUserId);
+	}
 }

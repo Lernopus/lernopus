@@ -38,6 +38,12 @@ public class LaLearnCourse extends LaUserDateAudit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "la_corse_id")
     private Long laCourseId;
+	
+	@Column(name = "la_corse_parent_id")
+    private Long laCourseParentId;
+	
+	@Column(name = "la_corse_root_id")
+    private Long laCourseRootId;
 
     @NotBlank
     @Size(max = 250)
@@ -92,13 +98,15 @@ public class LaLearnCourse extends LaUserDateAudit {
     		mappedBy = "laLearnCourse")
     private List<LaLearnAttachments> laLearnAttachments = new LinkedList<>();
     
-    public LaLearnCourse(String laCourseName , String laAuthorId, Boolean laIsNote, String laCourseContentText, String laCourseContentHtml, List<LaLearnAttachments> laLearnAttachments) {
+    public LaLearnCourse(String laCourseName , String laAuthorId, Boolean laIsNote, String laCourseContentText, String laCourseContentHtml, List<LaLearnAttachments> laLearnAttachments, Long laCourseParentId, Long laCourseRootId) {
         this.laCourseName = laCourseName;
         this.laAuthorId = laAuthorId;
         this.laIsNote = laIsNote;
         this.laCourseContentHtml = laCourseContentHtml;
         this.laCourseContentText = laCourseContentText;
         this.laLearnAttachments = laLearnAttachments;
+        this.laCourseParentId = laCourseParentId;
+        this.laCourseRootId = laCourseRootId;
         
     }
     
@@ -113,6 +121,22 @@ public class LaLearnCourse extends LaUserDateAudit {
 
     public void setLaCourseId(Long laCourseId) {
         this.laCourseId = laCourseId;
+    }
+    
+    public Long getLaCourseParentId() {
+        return laCourseParentId;
+    }
+
+    public void setLaCourseParentId(Long laCourseParentId) {
+        this.laCourseParentId = laCourseParentId;
+    }
+    
+    public Long getLaCourseRootId() {
+        return laCourseRootId;
+    }
+
+    public void setLaCourseRootId(Long laCourseRootId) {
+        this.laCourseRootId = laCourseRootId;
     }
 
     public String getLaCourseName() {

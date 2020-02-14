@@ -1,46 +1,51 @@
 package com.lernopus.lernopus.security;
 
-import io.jsonwebtoken.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Component;
-
+import java.nio.file.attribute.UserPrincipal;
 import java.util.Date;
 
-/**
- * Created by amernath v on 2019-09-01.
- */
-@Component
-public class JwtTokenProvider {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Service;
 
-    private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
+import com.lernopus.lernopus.config.AppProperties;
 
-    @Value("${app.jwtSecret}")
-    private String jwtSecret;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 
-    @Value("${app.jwtExpirationInMs}")
-    private int jwtExpirationInMs;
+@Service
+public class TokenProvider {
 
-    public String generateToken(Authentication authentication) {
+    private static final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
 
+    private AppProperties appProperties;
+
+    public TokenProvider(AppProperties appProperties) {
+        this.appProperties = appProperties;
+    }
+
+    public String createToken(Authentication authentication) {
         LaUserPrincipal userPrincipal = (LaUserPrincipal) authentication.getPrincipal();
 
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
+        Date expiryDate = new Date(now.getTime() + appProperties.getAuth().getTokenExpirationMsec());
 
         return Jwts.builder()
                 .setSubject(Long.toString(userPrincipal.getLaUserId()))
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .signWith(SignatureAlgorithm.HS512, appProperties.getAuth().getTokenSecret())
                 .compact();
     }
 
-    public Long getUserIdFromJWT(String token) {
+    public Long getUserIdFromToken(String token) {
         Claims claims = Jwts.parser()
-                .setSigningKey(jwtSecret)
+                .setSigningKey(appProperties.getAuth().getTokenSecret())
                 .parseClaimsJws(token)
                 .getBody();
 
@@ -49,7 +54,7 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String authToken) {
         try {
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
+            Jwts.parser().setSigningKey(appProperties.getAuth().getTokenSecret()).parseClaimsJws(authToken);
             return true;
         } catch (SignatureException ex) {
             logger.error("Invalid JWT signature");
@@ -64,4 +69,5 @@ public class JwtTokenProvider {
         }
         return false;
     }
+
 }
