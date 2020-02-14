@@ -7,7 +7,7 @@
 1. **Clone the application**
 
 	```bash
-	git clone https://github.com/callicoder/spring-security-react-ant-design-polls-app.git
+	git clone https://github.com/Lernopus/lernopus.git
 	cd lernopus-app-server
 	```
 
