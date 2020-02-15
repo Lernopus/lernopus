@@ -96,6 +96,32 @@ class CourseDetail extends Component {
         this.loadCourseDetails(learnCourseId,this.state.page + 1);
     }
 
+    componentWillReceiveProps(nextProps, state) {
+        if(this.props.isAuthenticated !== nextProps.isAuthenticated) {
+            // Reset State
+            this.setState({
+                courses: [],
+                page: 0,
+                size: 10,
+                totalElements: 0,
+                totalPages: 0,
+                last: true,
+                // currentVotes: [],
+                isLoading: false
+            });    
+            var learnCourseId = nextProps.match.params.learnCourseId;
+            this.loadCourseDetails(learnCourseId);
+        }
+        else
+        {
+            if(!!nextProps.match.params.learnCourseId && !isNaN(nextProps.match.params.learnCourseId))
+            {
+                var learnCourseId = nextProps.match.params.learnCourseId;
+                this.loadCourseDetails(learnCourseId);
+            }
+        }
+    }
+
     render() {
         const courseViews = [];
         if(this.state.courses !== null && this.state.courses !== undefined)
@@ -124,7 +150,7 @@ class CourseDetail extends Component {
             
             <div className="new-course-container">
                     <div className="course-creator-info">
-                        <Link className="creator-link" to={`/learnCourseId/${this.state.course.createdBy.laUserName}`}>
+                        <Link className="creator-link" to={`/users/${this.state.course.createdBy.laUserName}`}>
                             <Avatar className="course-creator-avatar" 
                                 style={{ backgroundColor: getAvatarColor(this.state.course.createdBy.laUserFullName)}} >
                                 {this.state.course.createdBy.laUserFullName[0].toUpperCase()}
